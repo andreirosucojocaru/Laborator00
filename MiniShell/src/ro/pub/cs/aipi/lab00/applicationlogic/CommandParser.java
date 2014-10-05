@@ -13,10 +13,13 @@ public class CommandParser {
 		switch (parts[0]) {
 			case Constants.CHANGE_DIRECTORY:
 				currentDirectory = fileSystemOperations.changeDirectory(parts[1], currentDirectory);
-				break;
+				break;			
 			case Constants.MAKE_DIRECTORY1:
 			case Constants.MAKE_DIRECTORY2:
 				fileSystemOperations.makeDirectory(parts[1], currentDirectory);
+				break;
+			case Constants.TOUCH:
+				fileSystemOperations.touch(parts[1], currentDirectory, scanner);
 				break;
 			case Constants.EXIT_COMMAND:
 			case Constants.QUIT_COMMAND:

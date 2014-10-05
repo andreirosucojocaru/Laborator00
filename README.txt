@@ -8,6 +8,10 @@ In the case of overwriting existing files or deleting non-empty directories, the
 
 There is no support at the moment for symbolic links.
 
+* v1.1.0
+Added support for:
+ - touch <new_file> / touch <existing_file>: creates a new file with the specified content; appends the specified content to an existing file; the content is to be added line by line until /quit is entered
+
 * v1.0.0
 The commands supported so far are:
  - cd <new_directory>: changes the current directory to the new_directory, which may denote a relative or an absolute path
