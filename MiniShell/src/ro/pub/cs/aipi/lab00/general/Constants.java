@@ -7,6 +7,7 @@ public interface Constants {
 	final public static String PROMPT1							= "minishell:";
 	final public static String PROMPT2							= "> ";
 
+	final public static String PRINT_WORKING_DIRECTORY_COMMAND	= "pwd";
 	final public static String CHANGE_DIRECTORY					= "cd";
 	final public static String LIST								= "ls";
 	final public static String DIRECTORY						= "dir";

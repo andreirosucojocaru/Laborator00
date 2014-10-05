@@ -8,6 +8,11 @@ In the case of overwriting existing files or deleting non-empty directories, the
 
 There is no support at the moment for symbolic links.
 
+* v4.0.0
+Added support for:
+ - pwd: displays the absolute path of the current directory
+ - cat <file>: displays the content of the file
+
 * v3.0.0
 Added support for:
  - ls <directory> / dir <directory>: displays the content of the directory, indicating for each entry the type and permissions, the size, the creation date and the name

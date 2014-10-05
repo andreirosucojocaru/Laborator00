@@ -14,6 +14,9 @@ public class CommandParser {
 			case Constants.CHANGE_DIRECTORY:
 				currentDirectory = fileSystemOperations.changeDirectory(parts[1], currentDirectory);
 				break;
+			case Constants.PRINT_WORKING_DIRECTORY_COMMAND:
+				fileSystemOperations.printWorkingDirectory(currentDirectory);
+				break;
 			case Constants.LIST:
 			case Constants.DIRECTORY:
 				fileSystemOperations.listDirectory(currentDirectory);

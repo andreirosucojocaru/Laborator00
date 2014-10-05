@@ -49,6 +49,10 @@ public class FileSystemOperations {
 		}	
 		return null;
 	}
+
+	public void printWorkingDirectory(Path currentDirectory) {
+		System.out.println(currentDirectory.toString());
+	}
 	
 	public Path changeDirectory(String newDirectory, Path oldDirectory) {
 		Path path = checkIfExists(newDirectory, oldDirectory);
@@ -130,7 +134,7 @@ public class FileSystemOperations {
 					content.getName());
 		System.out.format("%n%,d bytes in %d directories and %d files%n",totalFileSize,numberOfDirectories,numberOfFiles);
 	}
-	
+
 	public void makeDirectory(String name, Path currentDirectory) {
 		Path path = null;
 		boolean succeeded = false;
