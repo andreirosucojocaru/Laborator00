@@ -18,6 +18,9 @@ public class CommandParser {
 			case Constants.DIRECTORY:
 				fileSystemOperations.listDirectory(currentDirectory);
 				break;
+			case Constants.CATENATE:
+				fileSystemOperations.catenate(parts[1], currentDirectory);
+				break;
 			case Constants.MAKE_DIRECTORY1:
 			case Constants.MAKE_DIRECTORY2:
 				fileSystemOperations.makeDirectory(parts[1], currentDirectory);
