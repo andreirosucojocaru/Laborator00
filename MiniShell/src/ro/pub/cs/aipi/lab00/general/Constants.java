@@ -11,6 +11,7 @@ public interface Constants {
 	final public static String CHANGE_DIRECTORY					= "cd";
 	final public static String LIST								= "ls";
 	final public static String DIRECTORY						= "dir";
+	final public static String CATENATE							= "cat";
 	final public static String MAKE_DIRECTORY1					= "mkdir";
 	final public static String MAKE_DIRECTORY2					= "md";
 	final public static String TOUCH							= "touch";

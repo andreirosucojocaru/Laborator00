@@ -8,9 +8,15 @@ In the case of overwriting existing files or deleting non-empty directories, the
 
 There is no support at the moment for symbolic links.
 
+<<<<<<< HEAD
 * v4.0.1
 Added support for:
  - pwd: displays the absolute path of the current directory
+=======
+* v4.0.2
+Added support for:
+ - cat <file>: displays the content of the file
+>>>>>>> cat
 
 * v3.0.0
 Added support for:

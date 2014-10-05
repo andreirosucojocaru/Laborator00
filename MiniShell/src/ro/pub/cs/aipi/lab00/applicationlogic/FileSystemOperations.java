@@ -1,5 +1,6 @@
 package ro.pub.cs.aipi.lab00.applicationlogic;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -133,6 +134,22 @@ public class FileSystemOperations {
 					content.getLastModified(),
 					content.getName());
 		System.out.format("%n%,d bytes in %d directories and %d files%n",totalFileSize,numberOfDirectories,numberOfFiles);
+	}
+
+	public void catenate(String name, Path currentDirectory) {
+		Path path = checkIfExists(name, currentDirectory);
+		if (path != null && Files.isRegularFile(path) && Files.isReadable(path)) {
+			Charset charset = Charset.forName("UTF-8");
+			try (BufferedReader bufferedReader = Files.newBufferedReader(path, charset)) {
+				String line = null;
+				while ((line = bufferedReader.readLine()) != null)
+					System.out.println(line);
+			} catch (IOException ioException) {
+				System.out.println("Operation could not be performed !"+ioException.getMessage());
+			}
+		}
+		else
+			System.out.format("Could not display the contents of file %s!%n",name);
 	}
 
 	public void makeDirectory(String name, Path currentDirectory) {
