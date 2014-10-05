@@ -8,6 +8,14 @@ In the case of overwriting existing files or deleting non-empty directories, the
 
 There is no support at the moment for symbolic links.
 
+* v2.0.0
+Added support for:
+ - cp <source> <target> / copy <source> <target>: copies the source into target, whether the source / the target are files or directories; the only operation that cannot be performed is copying the content of a directory into a file
+ - mv <source> <target> / move <source> <target>: moves the source into target, whether the source / the target are files or directories
+Note: 
+1) in the case of directories, the content is copied / moved recursively
+2) if the files in the source are also to be found in the target, the user is prompted whether to override them or not
+
 * v1.1.0
 Added support for:
  - touch <new_file> / touch <existing_file>: creates a new file with the specified content; appends the specified content to an existing file; the content is to be added line by line until /quit is entered

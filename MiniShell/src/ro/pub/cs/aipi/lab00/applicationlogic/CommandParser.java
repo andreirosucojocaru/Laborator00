@@ -21,6 +21,14 @@ public class CommandParser {
 			case Constants.TOUCH:
 				fileSystemOperations.touch(parts[1], currentDirectory, scanner);
 				break;
+			case Constants.COPY1:
+			case Constants.COPY2:
+				fileSystemOperations.manipulate(parts[1], parts[2], currentDirectory, scanner, Constants.OPERATION_COPY);
+				break;
+			case Constants.MOVE1:
+			case Constants.MOVE2:
+				fileSystemOperations.manipulate(parts[1], parts[2], currentDirectory, scanner, Constants.OPERATION_MOVE);
+				break;				
 			case Constants.EXIT_COMMAND:
 			case Constants.QUIT_COMMAND:
 				System.out.println("Bye bye!");
