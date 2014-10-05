@@ -8,6 +8,11 @@ In the case of overwriting existing files or deleting non-empty directories, the
 
 There is no support at the moment for symbolic links.
 
+* v3.0.0
+Added support for:
+ - ls <directory> / dir <directory>: displays the content of the directory, indicating for each entry the type and permissions, the size, the creation date and the name
+Note: the output of the command also includes general statistics like total size of the content, number of files and (sub)directories
+
 * v2.1.0
 Added support for:
  - rm <file> / del <file>: deletes the file from the disk

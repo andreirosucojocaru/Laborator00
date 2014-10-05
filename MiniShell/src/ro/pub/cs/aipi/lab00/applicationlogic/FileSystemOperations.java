@@ -3,7 +3,10 @@ package ro.pub.cs.aipi.lab00.applicationlogic;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.AccessDeniedException;
+import java.nio.file.DirectoryIteratorException;
 import java.nio.file.DirectoryNotEmptyException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
@@ -14,9 +17,18 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.DosFileAttributes;
+import java.nio.file.attribute.PosixFileAttributes;
+import java.nio.file.attribute.PosixFilePermissions;
+import java.nio.file.attribute.UserPrincipal;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Scanner;
 
+import ro.pub.cs.aipi.lab00.data.FileProperties;
+import ro.pub.cs.aipi.lab00.data.FileTime;
 import ro.pub.cs.aipi.lab00.general.Constants;
+import ro.pub.cs.aipi.lab00.general.Utilities;
 
 public class FileSystemOperations {
 	
@@ -43,6 +55,80 @@ public class FileSystemOperations {
 		if (path != null)
 			return path;
 		return oldDirectory;
+	}
+	
+	public void listDirectory(Path currentDirectory) {
+		int numberOfFiles = 0, numberOfDirectories = 0;
+		String directory;
+		long size, totalFileSize = 0, maxFileSize = 0;
+		Instant lastModified;
+		UserPrincipal owner;
+		int maxOwnerLength = 0;
+		BasicFileAttributes attributes = null;
+		String filePermissions = null;
+		ArrayList<FileProperties> result = new ArrayList<>();
+		try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(currentDirectory)) {
+			for (Path entry: directoryStream) {
+				try {
+					size = Files.size(entry);
+					if (Files.isDirectory(entry)) {
+						directory = "d";
+						numberOfDirectories++;
+						size = 0;
+					}
+					else {
+						directory = "-";
+						numberOfFiles++;
+						totalFileSize += size;
+						if (size > maxFileSize)
+							maxFileSize = size;
+					}
+					lastModified = Files.getLastModifiedTime(entry).toInstant();
+					owner = Files.getOwner(entry);
+					if (owner.getName().toString().length() > maxOwnerLength)
+						maxOwnerLength = owner.getName().toString().length();
+					// UNIX-based OS
+					try {
+						attributes = Files.readAttributes(entry,PosixFileAttributes.class);
+						filePermissions = PosixFilePermissions.toString(((PosixFileAttributes)attributes).permissions());
+					} catch(UnsupportedOperationException exception) {
+						if (Constants.DEBUG)
+							System.out.println("Operations could not be performed! "+exception.getMessage());
+					}
+					// DOS-based OS
+					try {
+						attributes = Files.readAttributes(entry,DosFileAttributes.class);
+						filePermissions = (((DosFileAttributes)attributes).isReadOnly()?"r":"-")+
+								(((DosFileAttributes)attributes).isHidden()?"h":"-")+
+								(((DosFileAttributes)attributes).isArchive()?"a":"-")+
+								(((DosFileAttributes)attributes).isSystem()?"s":"-");
+					} catch(UnsupportedOperationException exception) {
+						if (Constants.DEBUG)
+							System.out.println("Operations could not be performed! "+exception.getMessage());
+					}
+					String[] parts = lastModified.toString().split("[TZ:/.-]");
+					result.add(new FileProperties(directory+filePermissions,
+							owner.getName(),
+							size,
+							new FileTime(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2]), Integer.parseInt(parts[3]), Integer.parseInt(parts[4])),
+							entry.getFileName().toString()));
+				} catch (AccessDeniedException accessDeniedException) {
+					if (Constants.DEBUG)
+						System.out.format("Access denied on file %s!%n", entry.toString());
+				}
+			}
+		} catch (IOException | DirectoryIteratorException exception) {
+			if (Constants.DEBUG)
+				System.out.println("Operation could not be performed! "+exception.getMessage());
+		}
+		for(FileProperties content: result)
+			System.out.format("%-10s %-"+maxOwnerLength+"s %"+Utilities.numberOfDigits(maxFileSize)+"s %-16s %s %n", 
+					content.getPermissions(),
+					content.getOwner(),
+					Utilities.format(content.getSize()),
+					content.getLastModified(),
+					content.getName());
+		System.out.format("%n%,d bytes in %d directories and %d files%n",totalFileSize,numberOfDirectories,numberOfFiles);
 	}
 	
 	public void makeDirectory(String name, Path currentDirectory) {
@@ -101,7 +187,7 @@ public class FileSystemOperations {
 		} else 
 			System.out.format("File %s could not be created!", name);
 	}
-
+	
 	private static boolean mayReplaceExisting(Path file, Scanner scanner) {
 		System.out.format("File %s already exists! Overwrite? [yes/no] ",file.getFileName());
 		String answer = scanner.nextLine();
@@ -237,4 +323,5 @@ public class FileSystemOperations {
 				break;
 		}
 	}
+	
 }
