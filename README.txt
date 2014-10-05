@@ -8,6 +8,11 @@ In the case of overwriting existing files or deleting non-empty directories, the
 
 There is no support at the moment for symbolic links.
 
+* v2.1.0
+Added support for:
+ - rm <file> / del <file>: deletes the file from the disk
+ - rmdir <directory> / delete <directory>: deletes the directory from the disk; if the directory is not empty, the user is prompted wheter to continue the deletion of its content recursively
+
 * v2.0.0
 Added support for:
  - cp <source> <target> / copy <source> <target>: copies the source into target, whether the source / the target are files or directories; the only operation that cannot be performed is copying the content of a directory into a file

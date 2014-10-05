@@ -13,7 +13,7 @@ public class CommandParser {
 		switch (parts[0]) {
 			case Constants.CHANGE_DIRECTORY:
 				currentDirectory = fileSystemOperations.changeDirectory(parts[1], currentDirectory);
-				break;			
+				break;
 			case Constants.MAKE_DIRECTORY1:
 			case Constants.MAKE_DIRECTORY2:
 				fileSystemOperations.makeDirectory(parts[1], currentDirectory);
@@ -29,6 +29,12 @@ public class CommandParser {
 			case Constants.MOVE2:
 				fileSystemOperations.manipulate(parts[1], parts[2], currentDirectory, scanner, Constants.OPERATION_MOVE);
 				break;				
+			case Constants.REMOVE_FILE:
+			case Constants.DELETE_FILE:
+			case Constants.REMOVE_DIRECTORY:
+			case Constants.DELETE_DIRECTORY:
+				fileSystemOperations.manipulate(parts[1], null, currentDirectory, scanner, Constants.OPERATION_DELETE);
+				break;
 			case Constants.EXIT_COMMAND:
 			case Constants.QUIT_COMMAND:
 				System.out.println("Bye bye!");

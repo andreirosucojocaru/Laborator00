@@ -101,13 +101,12 @@ public class FileSystemOperations {
 		} else 
 			System.out.format("File %s could not be created!", name);
 	}
-	
-	
+
 	private static boolean mayReplaceExisting(Path file, Scanner scanner) {
 		System.out.format("File %s already exists! Overwrite? [yes/no] ",file.getFileName());
 		String answer = scanner.nextLine();
 		return answer.equals(Constants.ACCEPT) || answer.equals(Constants.ACCEPT_SHORT);
-	}	
+	}
 	
 	protected static void manipulate(Path source, Path target, Scanner scanner, int operation) {
 		if (target == null || Files.notExists(target) || mayReplaceExisting(target, scanner))
@@ -118,6 +117,9 @@ public class FileSystemOperations {
 						break;
 					case Constants.OPERATION_MOVE:
 						Files.move(source, target, StandardCopyOption.REPLACE_EXISTING);
+						break;
+					case Constants.OPERATION_DELETE:
+						Files.delete(source);
 						break;
 				}
 				
@@ -141,20 +143,22 @@ public class FileSystemOperations {
 		
 		@Override
 		public FileVisitResult preVisitDirectory(Path directory, BasicFileAttributes attributes) {
-			Path newDirectory = target.resolve(source.relativize(directory));
-			try {
-				Files.copy(directory, newDirectory);
-			} catch (IOException ioException) {
-				if (!(ioException instanceof FileAlreadyExistsException))
-					return FileVisitResult.SKIP_SUBTREE;
-				System.out.format("Directory %s could not be created: %s!%n", directory.getFileName(), ioException.getMessage());
+			if (operation != Constants.OPERATION_DELETE) {
+				Path newDirectory = target.resolve(source.relativize(directory));
+				try {
+					Files.copy(directory, newDirectory);
+				} catch (IOException ioException) {
+					if (!(ioException instanceof FileAlreadyExistsException))
+						return FileVisitResult.SKIP_SUBTREE;
+					System.out.format("Directory %s could not be created: %s!%n", directory.getFileName(), ioException.getMessage());
+				}
 			}
 			return FileVisitResult.CONTINUE;
 		}
 		
 		@Override
 		public FileVisitResult visitFile(Path file, BasicFileAttributes attributes) {
-			manipulate(file, target.resolve(source.relativize(file)), scanner, operation);
+			manipulate(file, (operation != Constants.OPERATION_DELETE)?target.resolve(source.relativize(file)):null, scanner, operation);
 			return FileVisitResult.CONTINUE;
 		}
 		
@@ -181,7 +185,8 @@ public class FileSystemOperations {
 	public void manipulate(String source, String target, Path currentDirectory, Scanner scanner, int operation) {
 		Path sourcePath = null, targetPath = null;
 		sourcePath = checkIfExists(source, currentDirectory);
-		targetPath = checkIfExists(target, currentDirectory);
+		if (operation != Constants.OPERATION_DELETE)
+			targetPath = checkIfExists(target, currentDirectory);
 		switch (operation) {
 			case Constants.OPERATION_COPY:
 			case Constants.OPERATION_MOVE:
@@ -209,8 +214,27 @@ public class FileSystemOperations {
 				else
 					System.out.println("Operation could not be performed: source and/or target does not exist!");
 				break;
+			case Constants.OPERATION_DELETE:
+				if (sourcePath != null)
+					try {
+						Files.delete(sourcePath);
+					} catch (DirectoryNotEmptyException directoryNotEmptyException) {
+						System.out.print("Directory is not empty! Do you still wish to delete it? [yes|no] ");
+						String answer = scanner.nextLine();
+						if (answer.equals(Constants.ACCEPT) || answer.equals(Constants.ACCEPT_SHORT)) {
+							DirectoryScanner directoryScanner = new DirectoryScanner(sourcePath, null, scanner, Constants.OPERATION_DELETE);
+							try {
+								Files.walkFileTree(sourcePath, directoryScanner);
+							} catch (IOException ioException) {
+								System.out.format("Directory could not be scanned: %s!%n",ioException.getMessage());
+							}
+						}
+					} catch (IOException ioException) {
+						System.out.println("Operation could not be performed! "+ioException.getMessage());				
+					}
+				else
+					System.out.println("File does not exist!");				
+				break;
 		}
 	}
-	
-	
 }
